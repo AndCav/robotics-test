@@ -2,12 +2,12 @@ version: '3'
 
 services:
   ros-master:
-    image: ghcr.io/remyrobotics/robotics-test:latest
+    image: robotics-test-andrea-cavaliere
     command: stdbuf -o L roscore
     network_mode: host
 
   gazebo:
-    image: ghcr.io/remyrobotics/robotics-test:latest
+    image: robotics-test-andrea-cavaliere
     depends_on:
       - ros-master
     network_mode: host
@@ -20,5 +20,5 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
     devices:
       - "/dev/dri/"
-    command: bash -c "cd /home/catkin_ws && source devel/setup.bash && roslaunch --wait simple_scene gazebo.launch"
+    command: bash -c "cd /home/catkin_ws && catkin build && source devel/setup.bash && roslaunch --wait test_pick_and_place ur5_gr2_moveit_stack.launch"
     runtime: nvidia
