@@ -1,0 +1,4 @@
+# GetModelList.srv
+string target
+---
+string[] model_names  # list of targets

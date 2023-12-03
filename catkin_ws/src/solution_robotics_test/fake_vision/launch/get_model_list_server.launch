@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="fake_vision" name="get_model_list_service_server" type="get_model_list_server.py"
+        output="screen" />
+</launch>

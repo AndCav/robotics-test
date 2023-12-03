@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="test_pick_and_place" name="pick_and_place_node" type="pipeline_manager.py"
+        output="screen" />
+</launch>
