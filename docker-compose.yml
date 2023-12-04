@@ -2,12 +2,12 @@ version: '3'
 
 services:
   ros-master:
-    image: robotics-test-andrea-cavaliere
+    image: ghcr.io/andcav/robotics-test:latest
     command: stdbuf -o L roscore
     network_mode: host
 
   gazebo:
-    image: robotics-test-andrea-cavaliere
+    image: ghcr.io/andcav/robotics-test:latest
     depends_on:
       - ros-master
     network_mode: host
