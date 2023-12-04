@@ -20,7 +20,8 @@ class ModelListService:
                 if substring in model_name:
                     model_state = self.get_model_state(model_name, "world")
                     pose = model_state.pose.position
-                    if pose.z > 0.7 and -0.5 < pose.x < 0.5 and pose.y < 0:
+                    # Y coordinate of the position is not lower-bounded to test for potential errors during the pick phase.
+                    if pose.z > 0.7 and -0.5 < pose.x < 0.5 and pose.y < 0:  
                         filtered_model_names.append(model_name)
 
             return GetModelListResponse(filtered_model_names)

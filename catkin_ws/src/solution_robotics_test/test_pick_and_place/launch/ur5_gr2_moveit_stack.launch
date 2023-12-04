@@ -1,7 +1,19 @@
 <?xml version="1.0"?>
 <launch>
-    <include file="$(find simple_scene)/launch/gazebo.launch" />
-    <include file="$(find ur5_gr2_moveit_config)/launch/move_group.launch" />
+    <arg name="yamlRobot" default="$(find test_pick_and_place)/config/robot_list.yaml" />
+
+
+    <!-- <include file="$(find simple_scene)/launch/gazebo.launch" /> -->
+    <include file="$(find simple_scene)/launch/world_bringup.launch" />
+
+
+    <group ns="ur5e_1">
+        <rosparam command="load" file="$(arg yamlRobot)" />
+        <include file="$(find simple_scene)/launch/robot_bringup.launch" />
+        <include file="$(find ur5_gr2_moveit_config)/launch/move_group.launch" />
+        <include file="$(find test_pick_and_place)/launch/onerobot_planner.launch" />
+    </group>
+
+
     <include file="$(find fake_vision)/launch/get_model_list_server.launch" />
-    <include file="$(find test_pick_and_place)/launch/onerobot_planner.launch" />
 </launch>

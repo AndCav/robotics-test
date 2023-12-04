@@ -25,16 +25,16 @@ OPEN_GRIPPER=1
 NEUTRAL_GRIPPER=0
 
 class PickAndPlace:
-    def __init__(self,move_group_name):
+    def __init__(self,move_group_name,robot_gazebo_name):
         
         rospy.wait_for_service('/gazebo/get_model_state')
         self.get_model_state = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
-        rospy.wait_for_service('get_model_list')
-        self.get_target_list = rospy.ServiceProxy('get_model_list', GetModelList)
+        rospy.wait_for_service('/get_model_list')
+        self.get_target_list = rospy.ServiceProxy('/get_model_list', GetModelList)
 
 
         #just to safely wait until moveit_config has started
-        rospy.wait_for_service('/apply_planning_scene')
+        rospy.wait_for_service('apply_planning_scene')
         # Instantiate a RobotCommander object
         self.robot = moveit_commander.RobotCommander()
         self.scene = moveit_commander.PlanningSceneInterface()
@@ -43,7 +43,7 @@ class PickAndPlace:
 
 
 
-        self.gripper_pub = rospy.Publisher("/gripper_joint_position/command",Float64, queue_size=1)
+        self.gripper_pub = rospy.Publisher("gripper_joint_position/command",Float64, queue_size=1)
 
         #release the grip and return to the home configuration at takeoff.
         self.command_gripper(OPEN_GRIPPER)
@@ -58,7 +58,7 @@ class PickAndPlace:
         self.desired_pose= tf_conversions.toMsg(PyKDL.Frame(desired_orientation,PyKDL.Vector()))
 
         #evaluate the transformation matrix to get targets' pose with respect to robot base frame
-        robot_pose = self.get_robot_pose()
+        robot_pose = self.get_robot_pose(robot_gazebo_name)
         self.robot_matrix = self.create_transformation_matrix(robot_pose)
 
 
@@ -140,10 +140,10 @@ class PickAndPlace:
 
         return transformed_pose
 
-    def get_robot_pose(self):
+    def get_robot_pose(self,gazebo_model_name):
         try:
             get_model_state = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
-            resp = get_model_state('robot', '') 
+            resp = get_model_state(gazebo_model_name, '') 
             return resp.pose
         except rospy.ServiceException as e:
             rospy.logerr("Service call failed: %s" % e)
@@ -288,11 +288,25 @@ class PickAndPlace:
 if __name__ == '__main__':
 
     rospy.init_node('pick_and_place', anonymous=False)
+    robot_name='robot'
+    try:
+        robot_list = rospy.get_param('robot_list')
+        if robot_list:
+            robot_name=robot_list[0]
+        else:
+            raise ValueError("The robot_list is empty")
+
+    except KeyError:
+        rospy.signal_shutdown("Parameter 'robot_list' not found")
+    except ValueError as e:
+        print(e)
+        rospy.signal_shutdown("i will shutdown this node")
+
 
     try:
         moveit_commander.roscpp_initialize(sys.argv)
         # Create an instance of the PickAndPlace class
-        pick_and_place = PickAndPlace('manipulator')
+        pick_and_place = PickAndPlace('manipulator','robot')
         pick_and_place.loop_routine("block")
         
     except rospy.ROSInterruptException:
