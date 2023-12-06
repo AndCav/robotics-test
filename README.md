@@ -19,7 +19,7 @@ The gripper can be controlled through a topic:
 ### Using docker image
 
 ```bash
-$ docker pull ghcr.io/remyrobotics/robotics-test:latest
+$ docker pull ghcr.io/andcav/robotics-test:latest
 $ xhost local:root
 $ docker-compose up
 ```
@@ -33,7 +33,7 @@ $ ./build.sh
 $ cd catkin_ws
 $ catkin build
 $ source devel/setup.bash
-$ roslaunch simple_scene gazebo.launch
+$ roslaunch test_pick_and_place ur5_gr2_moveit_stack.launch
 ```
 
 ## Evaluation
